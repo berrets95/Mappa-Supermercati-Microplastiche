@@ -1,21 +1,53 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <title>Mappa dei Punti di Interesse</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-</head>
-<body>
+const map = L.map('map').setView([41.9, 12.5], 6);
 
-  <div id="sidebar">
-    <input type="text" id="search" placeholder="Cerca punto di interesse...">
-    <ul id="poi-list"></ul>
-  </div>
+// Aggiungo le tiles OpenStreetMap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
 
-  <div id="map"></div>
+// Centra sulla posizione dell’utente
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+  });
+}
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+// Carico i punti di interesse
+fetch('pois.json')
+  .then(res => res.json())
+  .then(pois => {
+    const list = document.getElementById('poi-list');
+    pois.sort((a, b) => a.comune.localeCompare(b.comune));
+
+    pois.forEach(poi => {
+      const li = document.createElement('li');
+      li.textContent = `${poi.comune} – ${poi.nome}`;
+      list.appendChild(li);
+
+      // Marker con nome, comune e indirizzo
+      const marker = L.marker([poi.lat, poi.lng])
+        .addTo(map)
+        .bindPopup(`<b>${poi.nome}</b><br>${poi.comune}<br>${poi.indirizzo}`);
+
+      li.addEventListener('click', () => {
+        map.setView([poi.lat, poi.lng], 15);
+        marker.openPopup();
+      });
+    });
+  });
+
+// --- Barra di ricerca con pulsante toggle ---
+document.getElementById('toggle-search').addEventListener('click', () => {
+  const searchBar = document.getElementById('search');
+  searchBar.style.display = (searchBar.style.display === 'none' || searchBar.style.display === '') 
+    ? 'block' 
+    : 'none';
+});
+
+// --- Ricerca semplice ---
+document.getElementById('search').addEventListener('input', function () {
+  const query = this.value.toLowerCase();
+  document.querySelectorAll('#poi-list li').forEach(li => {
+    li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
+  });
+});
