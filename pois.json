@@ -1,6 +1,6 @@
 [
-  { "nome": "Museo Archeologico", "comune": "Roma", "lat": 41.8902, "lng": 12.4922 },
-  { "nome": "Duomo di Milano", "comune": "Milano", "lat": 45.4642, "lng": 9.19 },
-  { "nome": "Piazza San Marco", "comune": "Venezia", "lat": 45.434, "lng": 12.338 },
-  { "nome": "Galleria Vittorio Emanuele II", "comune": "Milano", "lat": 45.46595, "lng": 9.19035 }
+  { "nome": "Museo Archeologico", "comune": "Roma", "Indirizzo": "Via Lazio 23", "lat": 41.8902, "lng": 12.4922 },
+  { "nome": "Duomo di Milano", "comune": "Milano", "Indirizzo": "Via Lazio 23", "lat": 45.4642, "lng": 9.19 },
+  { "nome": "Piazza San Marco", "comune": "Venezia", "Indirizzo": "Via Lazio 23", "lat": 45.434, "lng": 12.338 },
+  { "nome": "Galleria Vittorio Emanuele II", "comune": "Milano", "Indirizzo": "Via Lazio 23", "lat": 45.46595, "lng": 9.19035 }
 ]
