@@ -1,53 +1,164 @@
-const map = L.map('map').setView([41.9, 12.5], 6);
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mappa dei Punti di Interesse</title>
 
-// Aggiungo le tiles OpenStreetMap
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+4Jv4z7m+g1ZLrJZo2wG4b5f6Q8V+U6pFPC4J1wWg="
+    crossorigin=""
+  />
 
-// Centra sulla posizione dell’utente
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(pos => {
-    map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-  });
-}
+  <style>
+    /* Imposto dimensioni base */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-// Carico i punti di interesse
-fetch('pois.json')
-  .then(res => res.json())
-  .then(pois => {
-    const list = document.getElementById('poi-list');
-    pois.sort((a, b) => a.comune.localeCompare(b.comune));
+    #map {
+      height: 400px;
+      width: 100%;
+    }
 
-    pois.forEach(poi => {
-      const li = document.createElement('li');
-      li.textContent = `${poi.comune} – ${poi.nome}`;
-      list.appendChild(li);
+    #controls {
+      padding: 10px;
+      background: #f8f8f8;
+      border-bottom: 1px solid #ddd;
+    }
 
-      // Marker con nome, comune e indirizzo
-      const marker = L.marker([poi.lat, poi.lng])
-        .addTo(map)
-        .bindPopup(`<b>${poi.nome}</b><br>${poi.comune}<br>${poi.indirizzo}`);
+    #toggle-search {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 15px;
+    }
 
-      li.addEventListener('click', () => {
-        map.setView([poi.lat, poi.lng], 15);
-        marker.openPopup();
+    #toggle-search:hover {
+      background-color: #005fa3;
+    }
+
+    /* Effetto slide per la barra di ricerca */
+    #search-container {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s ease-in-out;
+    }
+
+    #search-container.open {
+      max-height: 50px; /* altezza visibile */
+    }
+
+    #search {
+      width: 90%;
+      margin-top: 10px;
+      padding: 6px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #poi-list {
+      list-style: none;
+      padding: 10px;
+      margin: 0;
+    }
+
+    #poi-list li {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    #poi-list li:hover {
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="controls">
+    <button id="toggle-search">🔍 Cerca</button>
+    <div id="search-container">
+      <input type="text" id="search" placeholder="Cerca per nome o città...">
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <ul id="poi-list"></ul>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jPzQv1+Gk0f3L1ynHCeFLCiVbEohoP6Gz4Wv5mM="
+    crossorigin=""
+  ></script>
+
+  <script>
+    const map = L.map('map').setView([41.9, 12.5], 6);
+
+    // Aggiungo le tiles OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Centra sulla posizione dell’utente
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
+      });
+    }
+
+    // Carico i punti di interesse
+    fetch('pois.json')
+      .then(res => res.json())
+      .then(pois => {
+        const list = document.getElementById('poi-list');
+        pois.sort((a, b) => a.comune.localeCompare(b.comune));
+
+        pois.forEach(poi => {
+          const li = document.createElement('li');
+          li.textContent = `${poi.comune} – ${poi.nome}`;
+          list.appendChild(li);
+
+          // Marker con nome, comune e indirizzo
+          const marker = L.marker([poi.lat, poi.lng])
+            .addTo(map)
+            .bindPopup(`<b>${poi.nome}</b><br>${poi.comune}<br>${poi.indirizzo}`);
+
+          li.addEventListener('click', () => {
+            map.setView([poi.lat, poi.lng], 15);
+            marker.openPopup();
+          });
+        });
+      });
+
+    // --- Barra di ricerca con effetto slide ---
+    const toggleButton = document.getElementById('toggle-search');
+    const searchContainer = document.getElementById('search-container');
+
+    toggleButton.addEventListener('click', () => {
+      searchContainer.classList.toggle('open');
+    });
+
+    // --- Ricerca semplice ---
+    document.getElementById('search').addEventListener('input', function () {
+      const query = this.value.toLowerCase();
+      document.querySelectorAll('#poi-list li').forEach(li => {
+        li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
       });
     });
-  });
+  </script>
 
-// --- Barra di ricerca con pulsante toggle ---
-document.getElementById('toggle-search').addEventListener('click', () => {
-  const searchBar = document.getElementById('search');
-  searchBar.style.display = (searchBar.style.display === 'none' || searchBar.style.display === '') 
-    ? 'block' 
-    : 'none';
-});
-
-// --- Ricerca semplice ---
-document.getElementById('search').addEventListener('input', function () {
-  const query = this.value.toLowerCase();
-  document.querySelectorAll('#poi-list li').forEach(li => {
-    li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
-  });
-});
+</body>
+</html>
