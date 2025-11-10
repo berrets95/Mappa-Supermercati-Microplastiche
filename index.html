@@ -5,16 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mappa dei Punti di Interesse</title>
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet CSS (senza integrity per evitare errore) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-sA+4Jv4z7m+g1ZLrJZo2wG4b5f6Q8V+U6pFPC4J1wWg="
-    crossorigin=""
   />
 
   <style>
-    /* Imposto dimensioni base */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -54,7 +51,7 @@
     }
 
     #search-container.open {
-      max-height: 50px; /* altezza visibile */
+      max-height: 50px;
     }
 
     #search {
@@ -97,12 +94,8 @@
 
   <ul id="poi-list"></ul>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1jPzQv1+Gk0f3L1ynHCeFLCiVbEohoP6Gz4Wv5mM="
-    crossorigin=""
-  ></script>
+  <!-- Leaflet JS (senza integrity) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     const map = L.map('map').setView([41.9, 12.5], 6);
@@ -131,7 +124,6 @@
           li.textContent = `${poi.comune} – ${poi.nome}`;
           list.appendChild(li);
 
-          // Marker con nome, comune e indirizzo
           const marker = L.marker([poi.lat, poi.lng])
             .addTo(map)
             .bindPopup(`<b>${poi.nome}</b><br>${poi.comune}<br>${poi.indirizzo}`);
@@ -143,7 +135,7 @@
         });
       });
 
-    // --- Barra di ricerca con effetto slide ---
+    // Barra di ricerca con effetto slide
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
 
@@ -151,7 +143,7 @@
       searchContainer.classList.toggle('open');
     });
 
-    // --- Ricerca semplice ---
+    // Ricerca semplice
     document.getElementById('search').addEventListener('input', function () {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
