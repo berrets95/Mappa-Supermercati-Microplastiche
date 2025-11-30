@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mappa dei Punti di Interesse</title>
 
-  <!-- Leaflet CSS (senza integrity per evitare errore) -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -27,6 +27,8 @@
       padding: 10px;
       background: #f8f8f8;
       border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
     }
 
     #toggle-search {
@@ -43,11 +45,26 @@
       background-color: #005fa3;
     }
 
-    /* Effetto slide per la barra di ricerca */
+    /* Icone PDF e contenitore */
+    #icon-bar {
+      margin-left: auto;
+      display: inline-flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+
+    /* Barra di ricerca */
     #search-container {
       overflow: hidden;
       max-height: 0;
       transition: max-height 0.4s ease-in-out;
+      width: 100%;
     }
 
     #search-container.open {
@@ -78,6 +95,33 @@
     #poi-list li:hover {
       background-color: #f0f8ff;
     }
+
+    /* Viewer PDF */
+    #pdf-viewer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: white;
+      display: none;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    #close-pdf {
+      background: #0078d7;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      width: 100%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #pdf-frame {
+      width: 100%;
+      height: calc(100% - 50px);
+      border: none;
+    }
   </style>
 </head>
 
@@ -85,16 +129,29 @@
 
   <div id="controls">
     <button id="toggle-search">🔍 Cerca</button>
-    <div id="search-container">
-      <input type="text" id="search" placeholder="Cerca per nome o città...">
+
+    <!-- Icone -->
+    <div id="icon-bar">
+      <img src="img/contenitore.png" id="icon-contenitore" class="icon-btn" title="Apri PDF contenitore">
+      <img src="img/documento.png" id="icon-pdf" class="icon-btn" title="Apri documento PDF">
     </div>
+  </div>
+
+  <div id="search-container">
+    <input type="text" id="search" placeholder="Cerca per nome o città...">
   </div>
 
   <div id="map"></div>
 
   <ul id="poi-list"></ul>
 
-  <!-- Leaflet JS (senza integrity) -->
+  <!-- Viewer PDF -->
+  <div id="pdf-viewer">
+    <button id="close-pdf">⬅ Indietro</button>
+    <iframe id="pdf-frame"></iframe>
+  </div>
+
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
@@ -135,7 +192,7 @@
         });
       });
 
-    // Barra di ricerca con effetto slide
+    // Barra ricerca
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
 
@@ -143,12 +200,37 @@
       searchContainer.classList.toggle('open');
     });
 
-    // Ricerca semplice
+    // Ricerca
     document.getElementById('search').addEventListener('input', function () {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
         li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
       });
+    });
+
+    /* -------------------------
+       Apertura PDF icon buttons
+       ------------------------- */
+    const pdfViewer = document.getElementById('pdf-viewer');
+    const pdfFrame = document.getElementById('pdf-frame');
+    const closePdf = document.getElementById('close-pdf');
+
+    document.getElementById('icon-contenitore').addEventListener('click', () => {
+      openPDF("pdf/contenitore.pdf");
+    });
+
+    document.getElementById('icon-pdf').addEventListener('click', () => {
+      openPDF("pdf/documento.pdf");
+    });
+
+    function openPDF(path) {
+      pdfViewer.style.display = "flex";
+      pdfFrame.src = path;
+    }
+
+    closePdf.addEventListener('click', () => {
+      pdfViewer.style.display = "none";
+      pdfFrame.src = "";
     });
   </script>
 
