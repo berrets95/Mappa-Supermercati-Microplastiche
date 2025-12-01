@@ -118,6 +118,14 @@
       background: #005fa3;
     }
 
+    /* Desktop: barra di ricerca nascosta di default */
+    #search-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+      opacity: 0;
+    }
+
     /* Mobile responsive */
     @media (max-width: 768px) {
       #controls {
@@ -153,7 +161,7 @@
         margin-left: 5px;
       }
 
-      /* Search container sopra la mappa e controlli zoom */
+      /* Search container mobile overlay sopra mappa */
       #search-container {
         position: fixed;
         top: 40px;       /* subito sotto il pulsante Cerca */
@@ -162,22 +170,31 @@
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-        z-index: 99999;  /* molto sopra tutti i controlli Leaflet */
+        z-index: 99999;
         background: #f8f8f8;
         padding: 5px 10px;
         border-radius: 4px;
-        opacity: 0;      /* nascosta di default */
+        opacity: 0;
       }
 
       #search-container.open {
         max-height: 50px;
-        opacity: 1;      /* visibile quando aperta */
+        opacity: 1;
       }
 
-      /* Evita zoom automatico su input mobile */
       #search {
-        font-size: 16px;
+        font-size: 16px; /* evita zoom automatico su mobile */
       }
+    }
+
+    /* Input barra di ricerca generale */
+    #search {
+      width: 100%;
+      margin-top: 0;
+      padding: 6px;
+      font-size: 14px; /* desktop rimane 14px */
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -195,7 +212,6 @@
     </div>
   </div>
 
-  <!-- Barra di ricerca spostata qui per mobile -->
   <div id="search-container">
     <input type="text" id="search" placeholder="Cerca per nome o città...">
   </div>
