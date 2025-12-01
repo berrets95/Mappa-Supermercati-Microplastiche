@@ -172,15 +172,19 @@
         margin-left: 5px;
       }
 
-      /* Search container appears overlay sulla mappa */
+      /* Search container appare sopra la mappa e pulsanti zoom */
       #search-container {
         position: absolute;
-        top: 40px; /* sotto il pulsante Cerca */
+        top: 40px; /* subito sotto il pulsante Cerca */
         left: 10px;
         right: 10px;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.4s ease-in-out;
+        z-index: 2000; /* in primo piano sopra tutto */
+        background: #f8f8f8;
+        padding: 5px 10px;
+        border-radius: 4px;
       }
 
       #search-container.open {
