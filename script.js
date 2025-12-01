@@ -1,44 +1,105 @@
-const map = L.map('map').setView([41.9, 12.5], 6);
+/* ==========================================================
+   INIZIALIZZAZIONE MAPPA LEAFLET
+   ========================================================== */
 
-// Aggiungo le tiles OpenStreetMap
+const map = L.map('map').setView([41.8719, 12.5674], 6); // Italia
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors'
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap Contributors'
 }).addTo(map);
 
-// Provo a centrare sulla posizione dell’utente
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(pos => {
-    map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-  });
+let markerGroup = L.layerGroup().addTo(map);
+
+
+/* ==========================================================
+   CARICAMENTO DATI SUPERMERCATI (da JSON)
+   ========================================================== */
+
+fetch('supermercati.json')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(item => {
+            const marker = L.marker([item.lat, item.lng]).addTo(markerGroup);
+
+            marker.bindPopup(`
+                <b>${item.nome}</b><br>
+                ${item.indirizzo}<br>
+                Microplastiche: <b>${item.microplastiche}</b>
+            `);
+
+            item.marker = marker;
+        });
+
+        // salvo i dati globalmente per la ricerca
+        window.supermercatiData = data;
+    });
+
+
+/* ==========================================================
+   FUNZIONE DI RICERCA SUPERMERCATI
+   ========================================================== */
+
+const searchInput = document.getElementById('search');
+
+searchInput.addEventListener('input', function () {
+    const query = this.value.toLowerCase();
+
+    if (!window.supermercatiData) return;
+
+    markerGroup.clearLayers();
+
+    window.supermercatiData.forEach(item => {
+        const match =
+            item.nome.toLowerCase().includes(query) ||
+            item.indirizzo.toLowerCase().includes(query);
+
+        if (match) {
+            item.marker.addTo(markerGroup);
+        }
+    });
+});
+
+
+/* ==========================================================
+   GESTIONE PDF
+   ========================================================== */
+
+// Pulsante Contenitori
+document.getElementById('btn-contenitori').addEventListener('click', function () {
+    showPDF('pdf/contenitori.pdf');
+});
+
+// Pulsante Informative
+document.getElementById('btn-informative').addEventListener('click', function () {
+    showPDF('pdf/informative.pdf');
+});
+
+// Pulsante Indietro
+document.getElementById('btn-back').addEventListener('click', function () {
+    hidePDF();
+});
+
+
+/* ==========================================================
+   FUNZIONI PDF
+   ========================================================== */
+
+function showPDF(path) {
+    document.getElementById('map').style.display = 'none';
+    document.getElementById('header').style.display = 'none';
+
+    const viewer = document.getElementById('pdf-viewer');
+    viewer.style.display = 'block';
+
+    const frame = document.getElementById('pdf-frame');
+    frame.src = path;
 }
 
-// Carico i punti di interesse
-fetch('pois.json')
-  .then(res => res.json())
-  .then(pois => {
-    const list = document.getElementById('poi-list');
-    pois.sort((a, b) => a.comune.localeCompare(b.comune));
+function hidePDF() {
+    document.getElementById('pdf-frame').src = '';
+    document.getElementById('pdf-viewer').style.display = 'none';
 
-    pois.forEach(poi => {
-      const li = document.createElement('li');
-      li.textContent = `${poi.comune} – ${poi.nome}`;
-      list.appendChild(li);
-
-      const marker = L.marker([poi.lat, poi.lng])
-        .addTo(map)
-        .bindPopup(`<b>${poi.nome}</b><br>${poi.comune}`);
-
-      li.addEventListener('click', () => {
-        map.setView([poi.lat, poi.lng], 15);
-        marker.openPopup();
-      });
-    });
-  });
-
-// Aggiungo ricerca semplice
-document.getElementById('search').addEventListener('input', function () {
-  const query = this.value.toLowerCase();
-  document.querySelectorAll('#poi-list li').forEach(li => {
-    li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
-  });
-});
+    document.getElementById('map').style.display = 'block';
+    document.getElementById('header').style.display = 'flex';
+}
