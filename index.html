@@ -34,6 +34,7 @@
     #left-controls {
       display: flex;
       align-items: center;
+      position: relative;
     }
 
     #toggle-search {
@@ -67,16 +68,19 @@
     }
 
     #search-container {
+      position: absolute;
+      top: 0;
       overflow: hidden;
       max-height: 0;
       transition: max-height 0.4s ease-in-out;
+      z-index: 1001;
     }
 
     #search-container.open {
-      max-height: 50px;
+      max-height: 40px;
     }
 
-    #search {
+    #search-container input {
       width: 100%;
       padding: 6px;
       font-size: 14px;
@@ -134,69 +138,6 @@
 
     #pdf-back:hover {
       background: #005fa3;
-    }
-
-    /* Mobile responsive */
-    @media (max-width: 768px) {
-      #controls {
-        flex-wrap: nowrap;
-        padding: 8px;
-        position: relative;
-        z-index: 1000;
-      }
-
-      #left-controls, #right-buttons {
-        display: flex;
-        align-items: center;
-      }
-
-      #left-controls {
-        flex: 0 0 auto;
-        justify-content: flex-start;
-        position: relative;
-      }
-
-      #right-buttons {
-        flex: 0 0 auto;
-        justify-content: flex-end;
-        margin-left: auto;
-      }
-
-      #toggle-search {
-        font-size: 14px;
-        padding: 6px 10px;
-        margin-right: 5px;
-      }
-
-      .pdf-button {
-        font-size: 14px;
-        padding: 6px 10px;
-        margin-left: 5px;
-      }
-
-      /* Barra di ricerca mobile: allineata a Cerca e termina al bordo destro di Contenitori */
-      #search-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: flex-start;
-        pointer-events: none;
-      }
-
-      #search-container input {
-        pointer-events: auto;
-        flex: 1 1 auto;
-        max-width: calc(100% - 90px - 150px); /* approssimazione spazio pulsante Cerca + Contenitori */
-        margin-left: 5px;
-        max-height: 40px;
-        transition: max-height 0.4s ease-in-out;
-      }
-
-      #search-container.open input {
-        max-height: 40px;
-      }
     }
   </style>
 </head>
@@ -264,9 +205,20 @@
 
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
+    const searchInput = document.getElementById('search');
+    const rightButtons = document.getElementById('right-buttons');
 
     toggleButton.addEventListener('click', () => {
       searchContainer.classList.toggle('open');
+
+      if (searchContainer.classList.contains('open')) {
+        // Calcola la posizione e la larghezza della barra di ricerca
+        const toggleRect = toggleButton.getBoundingClientRect();
+        const rightRect = rightButtons.getBoundingClientRect();
+        searchContainer.style.left = (toggleRect.right + 5) + 'px';
+        searchContainer.style.top = toggleRect.top + 'px';
+        searchContainer.style.width = (rightRect.left - toggleRect.right - 5) + 'px';
+      }
     });
 
     document.getElementById('search').addEventListener('input', function () {
@@ -314,6 +266,17 @@
         pdfOverlay.appendChild(pdfBack);
         pdfOverlay.removeEventListener('transitionend', hide);
       });
+    });
+
+    // Aggiorna larghezza della barra se ridimensioni finestra
+    window.addEventListener('resize', () => {
+      if (searchContainer.classList.contains('open')) {
+        const toggleRect = toggleButton.getBoundingClientRect();
+        const rightRect = rightButtons.getBoundingClientRect();
+        searchContainer.style.left = (toggleRect.right + 5) + 'px';
+        searchContainer.style.top = toggleRect.top + 'px';
+        searchContainer.style.width = (rightRect.left - toggleRect.right - 5) + 'px';
+      }
     });
   </script>
 
