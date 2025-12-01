@@ -78,7 +78,6 @@
 
     #search {
       width: 100%;
-      margin-top: 0;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #ccc;
@@ -172,19 +171,29 @@
         margin-left: 5px;
       }
 
-      /* Search container appears overlay sulla mappa */
+      /* Barra di ricerca appare a destra del pulsante Cerca */
       #search-container {
         position: absolute;
-        top: 40px; /* sotto il pulsante Cerca */
-        left: 10px;
-        right: 10px;
+        top: 0;
+        left: auto;
+        right: 0;
+        width: calc(100% - 80px); /* spazio rimanente rispetto al pulsante Cerca */
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.4s ease-in-out;
+        z-index: 1001; /* sopra i pulsanti */
       }
 
       #search-container.open {
-        max-height: 50px;
+        max-height: 40px;
+      }
+
+      #search {
+        width: 100%;
+        padding: 6px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
       }
     }
   </style>
