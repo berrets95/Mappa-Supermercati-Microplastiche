@@ -146,17 +146,20 @@
       }
 
       #left-controls, #right-buttons {
-        flex: 1;
         display: flex;
         align-items: center;
       }
 
       #left-controls {
+        flex: 0 0 auto;
         justify-content: flex-start;
+        position: relative;
       }
 
       #right-buttons {
+        flex: 0 0 auto;
         justify-content: flex-end;
+        margin-left: auto;
       }
 
       #toggle-search {
@@ -171,29 +174,28 @@
         margin-left: 5px;
       }
 
-      /* Barra di ricerca appare a destra del pulsante Cerca */
+      /* Barra di ricerca mobile: allineata a Cerca e termina al bordo destro di Contenitori */
       #search-container {
         position: absolute;
         top: 0;
-        left: auto;
+        left: 0;
         right: 0;
-        width: calc(100% - 80px); /* spazio rimanente rispetto al pulsante Cerca */
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.4s ease-in-out;
-        z-index: 1001; /* sopra i pulsanti */
+        display: flex;
+        justify-content: flex-start;
+        pointer-events: none;
       }
 
-      #search-container.open {
+      #search-container input {
+        pointer-events: auto;
+        flex: 1 1 auto;
+        max-width: calc(100% - 90px - 150px); /* approssimazione spazio pulsante Cerca + Contenitori */
+        margin-left: 5px;
         max-height: 40px;
+        transition: max-height 0.4s ease-in-out;
       }
 
-      #search {
-        width: 100%;
-        padding: 6px;
-        font-size: 14px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
+      #search-container.open input {
+        max-height: 40px;
       }
     }
   </style>
