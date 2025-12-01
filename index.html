@@ -139,6 +139,18 @@
     #pdf-back:hover {
       background: #005fa3;
     }
+
+    /* Responsive per mobile: PDF adattato alla viewport */
+    @media (max-width: 768px) {
+      #pdf-overlay iframe {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100%;
+        max-height: 100%;
+        border: none;
+        overflow: hidden;
+      }
+    }
   </style>
 </head>
 
@@ -225,14 +237,14 @@
       });
     });
 
-    // Gestione overlay PDF con fade in/out e zoom automatico
+    // Gestione overlay PDF con fade in/out
     const pdfOverlay = document.getElementById('pdf-overlay');
     const pdfIframe = pdfOverlay.querySelector('iframe');
     const pdfBack = document.getElementById('pdf-back');
 
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
-        const pdfSrc = btn.dataset.pdf + '#zoom=page-width';  // aggiunto zoom automatico
+        const pdfSrc = btn.dataset.pdf;
         pdfIframe.src = pdfSrc;
         pdfOverlay.style.display = 'flex';
         requestAnimationFrame(() => {
