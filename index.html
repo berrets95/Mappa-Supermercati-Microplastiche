@@ -103,7 +103,7 @@
       background-color: #f0f8ff;
     }
 
-    /* Stile overlay PDF con effetto fade */
+    /* Stile overlay PDF con fade */
     #pdf-overlay {
       position: fixed;
       top: 0;
@@ -187,7 +187,7 @@
   <script>
     const map = L.map('map').setView([41.9, 12.5], 6);
 
-    // Aggiungo le tiles OpenStreetMap
+    // Tiles OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
@@ -199,7 +199,7 @@
       });
     }
 
-    // Carico i punti di interesse
+    // Carico POI
     fetch('pois.json')
       .then(res => res.json())
       .then(pois => {
@@ -222,7 +222,7 @@
         });
       });
 
-    // Barra di ricerca con effetto slide
+    // Toggle barra ricerca
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
 
@@ -238,55 +238,61 @@
       });
     });
 
-    // Rileva Safari su iOS
+    // Rileva Safari iOS
     const isSafariIOS = /iP(ad|hone|od).+Version\/[\d.]+.*Safari/i.test(navigator.userAgent);
 
     const pdfOverlay = document.getElementById('pdf-overlay');
     const pdfBack = document.getElementById('pdf-back');
 
-    // Gestione apertura PDF
+    // Apertura PDF
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
         const pdfSrc = btn.dataset.pdf;
-
-        // Reset overlay
         pdfOverlay.innerHTML = '';
         pdfOverlay.appendChild(pdfBack);
 
         if (isSafariIOS) {
-          // Usa embed per Safari su iOS
+          // Safari iOS: embed con sfondo bianco, senza fade
           const embed = document.createElement('embed');
           embed.src = pdfSrc;
           embed.type = 'application/pdf';
           embed.width = '100%';
           embed.height = '100%';
+          embed.style.backgroundColor = 'white';
           pdfOverlay.appendChild(embed);
+          pdfOverlay.style.display = 'flex';
+          pdfOverlay.style.opacity = '1';
         } else {
-          // Usa iframe per tutti gli altri browser
+          // Altri browser: iframe con fade
           const iframe = document.createElement('iframe');
           iframe.src = pdfSrc;
           iframe.style.flex = '1';
           iframe.style.width = '100%';
           iframe.style.border = 'none';
           pdfOverlay.appendChild(iframe);
+          pdfOverlay.style.display = 'flex';
+          requestAnimationFrame(() => {
+            pdfOverlay.style.opacity = '1';
+          });
         }
-
-        pdfOverlay.style.display = 'flex';
-        requestAnimationFrame(() => {
-          pdfOverlay.style.opacity = '1';
-        });
       });
     });
 
-    // Chiusura overlay PDF con fade
+    // Chiusura overlay PDF
     pdfBack.addEventListener('click', () => {
-      pdfOverlay.style.opacity = '0';
-      pdfOverlay.addEventListener('transitionend', function hide() {
+      if (!isSafariIOS) {
+        pdfOverlay.style.opacity = '0';
+        pdfOverlay.addEventListener('transitionend', function hide() {
+          pdfOverlay.style.display = 'none';
+          pdfOverlay.innerHTML = '';
+          pdfOverlay.appendChild(pdfBack);
+          pdfOverlay.removeEventListener('transitionend', hide);
+        });
+      } else {
         pdfOverlay.style.display = 'none';
         pdfOverlay.innerHTML = '';
         pdfOverlay.appendChild(pdfBack);
-        pdfOverlay.removeEventListener('transitionend', hide);
-      });
+      }
     });
   </script>
 
