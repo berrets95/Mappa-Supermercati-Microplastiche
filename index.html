@@ -136,6 +136,41 @@
     #pdf-back:hover {
       background: #005fa3;
     }
+
+    @media (max-width: 768px) {
+      /* Controls mobile layout */
+      #controls {
+        flex-wrap: wrap;
+        padding: 8px;
+      }
+
+      #left-controls, #right-buttons {
+        flex: 1 1 50%;
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      #left-controls {
+        justify-content: flex-start;
+      }
+
+      #right-buttons {
+        justify-content: flex-end;
+      }
+
+      #toggle-search {
+        font-size: 14px;
+        padding: 6px 10px;
+        margin-right: 5px;
+      }
+
+      .pdf-button {
+        font-size: 14px;
+        padding: 6px 10px;
+        margin-left: 5px;
+      }
+    }
   </style>
 </head>
 
