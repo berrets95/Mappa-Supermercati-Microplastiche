@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mappa dei Punti di Interesse</title>
 
+  <!-- Leaflet CSS (senza integrity per evitare errore) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -29,14 +30,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
-      z-index: 1000;
     }
 
     #left-controls {
       display: flex;
       align-items: center;
-      position: relative;
     }
 
     #toggle-search {
@@ -69,6 +67,7 @@
       background-color: #1e7e34;
     }
 
+    /* Effetto slide per la barra di ricerca */
     #search-container {
       overflow: hidden;
       max-height: 0;
@@ -80,7 +79,8 @@
     }
 
     #search {
-      width: 100%;
+      width: 90%;
+      margin-top: 10px;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #ccc;
@@ -103,6 +103,7 @@
       background-color: #f0f8ff;
     }
 
+    /* Stile overlay PDF con effetto fade */
     #pdf-overlay {
       position: fixed;
       top: 0;
@@ -138,24 +139,6 @@
     #pdf-back:hover {
       background: #005fa3;
     }
-
-    /* MOBILE: barra di ricerca sotto Cerca */
-    @media (max-width: 768px) {
-      #search-container {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 45px; /* subito sotto il pulsante Cerca */
-        z-index: 1001;
-        background: #f8f8f8;
-        padding: 5px 10px;
-      }
-
-      #search-container input {
-        width: 100%;
-        box-sizing: border-box;
-      }
-    }
   </style>
 </head>
 
@@ -179,25 +162,31 @@
 
   <ul id="poi-list"></ul>
 
+  <!-- Overlay PDF -->
   <div id="pdf-overlay">
     <button id="pdf-back">← Indietro</button>
+    <iframe src=""></iframe>
   </div>
 
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     const map = L.map('map').setView([41.9, 12.5], 6);
 
+    // Aggiungo le tiles OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+    // Centra sulla posizione dell’utente
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
         map.setView([pos.coords.latitude, pos.coords.longitude], 13);
       });
     }
 
+    // Carico i punti di interesse
     fetch('pois.json')
       .then(res => res.json())
       .then(pois => {
@@ -220,6 +209,7 @@
         });
       });
 
+    // Barra di ricerca con effetto slide
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
 
@@ -227,6 +217,7 @@
       searchContainer.classList.toggle('open');
     });
 
+    // Ricerca semplice
     document.getElementById('search').addEventListener('input', function () {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
@@ -234,33 +225,19 @@
       });
     });
 
-    const isMobile = /iP(hone|ad|od)|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
+    // Gestione overlay PDF con fade in/out
     const pdfOverlay = document.getElementById('pdf-overlay');
+    const pdfIframe = pdfOverlay.querySelector('iframe');
     const pdfBack = document.getElementById('pdf-back');
 
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
         const pdfSrc = btn.dataset.pdf;
-
-        if (isMobile) {
-          window.open(pdfSrc, '_blank');
-        } else {
-          pdfOverlay.innerHTML = '';
-          pdfOverlay.appendChild(pdfBack);
-
-          const iframe = document.createElement('iframe');
-          iframe.src = pdfSrc;
-          iframe.style.flex = '1';
-          iframe.style.width = '100%';
-          iframe.style.border = 'none';
-          pdfOverlay.appendChild(iframe);
-
-          pdfOverlay.style.display = 'flex';
-          requestAnimationFrame(() => {
-            pdfOverlay.style.opacity = '1';
-          });
-        }
+        pdfIframe.src = pdfSrc;
+        pdfOverlay.style.display = 'flex';
+        requestAnimationFrame(() => {
+          pdfOverlay.style.opacity = '1';
+        });
       });
     });
 
@@ -268,8 +245,7 @@
       pdfOverlay.style.opacity = '0';
       pdfOverlay.addEventListener('transitionend', function hide() {
         pdfOverlay.style.display = 'none';
-        pdfOverlay.innerHTML = '';
-        pdfOverlay.appendChild(pdfBack);
+        pdfIframe.src = '';
         pdfOverlay.removeEventListener('transitionend', hide);
       });
     });
