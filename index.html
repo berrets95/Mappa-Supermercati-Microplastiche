@@ -77,8 +77,8 @@
     }
 
     #search {
-      width: 90%;
-      margin-top: 10px;
+      width: 100%;
+      margin-top: 0;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #ccc;
@@ -137,18 +137,19 @@
       background: #005fa3;
     }
 
+    /* Mobile responsive */
     @media (max-width: 768px) {
-      /* Controls mobile layout */
       #controls {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         padding: 8px;
+        position: relative;
+        z-index: 1000;
       }
 
       #left-controls, #right-buttons {
-        flex: 1 1 50%;
+        flex: 1;
         display: flex;
         align-items: center;
-        margin-bottom: 5px;
       }
 
       #left-controls {
@@ -169,6 +170,21 @@
         font-size: 14px;
         padding: 6px 10px;
         margin-left: 5px;
+      }
+
+      /* Search container appears overlay sulla mappa */
+      #search-container {
+        position: absolute;
+        top: 40px; /* sotto il pulsante Cerca */
+        left: 10px;
+        right: 10px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out;
+      }
+
+      #search-container.open {
+        max-height: 50px;
       }
     }
   </style>
@@ -259,10 +275,8 @@
         const pdfSrc = btn.dataset.pdf;
 
         if (isMobile) {
-          // Mobile: apri in nuova scheda
           window.open(pdfSrc, '_blank');
         } else {
-          // Desktop: iframe con fade
           pdfOverlay.innerHTML = '';
           pdfOverlay.appendChild(pdfBack);
 
