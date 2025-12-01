@@ -225,14 +225,14 @@
       });
     });
 
-    // Gestione overlay PDF con fade in/out
+    // Gestione overlay PDF con fade in/out e zoom automatico
     const pdfOverlay = document.getElementById('pdf-overlay');
     const pdfIframe = pdfOverlay.querySelector('iframe');
     const pdfBack = document.getElementById('pdf-back');
 
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
-        const pdfSrc = btn.dataset.pdf;
+        const pdfSrc = btn.dataset.pdf + '#zoom=page-width';  // aggiunto zoom automatico
         pdfIframe.src = pdfSrc;
         pdfOverlay.style.display = 'flex';
         requestAnimationFrame(() => {
