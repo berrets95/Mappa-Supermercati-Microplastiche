@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mappa dei Punti di Interesse</title>
 
-  <!-- Leaflet CSS (senza integrity per evitare errore) -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -67,7 +67,6 @@
       background-color: #1e7e34;
     }
 
-    /* Effetto slide per la barra di ricerca */
     #search-container {
       overflow: hidden;
       max-height: 0;
@@ -103,7 +102,6 @@
       background-color: #f0f8ff;
     }
 
-    /* Stile overlay PDF con fade */
     #pdf-overlay {
       position: fixed;
       top: 0;
@@ -141,15 +139,13 @@
       background: #005fa3;
     }
 
-    /* Wrapper scrollabile per Safari iOS */
     .pdf-wrapper {
       flex: 1;
       width: 100%;
       overflow: auto;
-      -webkit-overflow-scrolling: touch; /* scroll fluido su iOS */
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* Responsive per mobile */
     @media (max-width: 768px) {
       #pdf-overlay iframe,
       #pdf-overlay embed,
@@ -183,30 +179,25 @@
 
   <ul id="poi-list"></ul>
 
-  <!-- Overlay PDF -->
   <div id="pdf-overlay">
     <button id="pdf-back">← Indietro</button>
   </div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     const map = L.map('map').setView([41.9, 12.5], 6);
 
-    // Tiles OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Centra sulla posizione dell’utente
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
         map.setView([pos.coords.latitude, pos.coords.longitude], 13);
       });
     }
 
-    // Carico POI
     fetch('pois.json')
       .then(res => res.json())
       .then(pois => {
@@ -229,7 +220,6 @@
         });
       });
 
-    // Toggle barra ricerca
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
 
@@ -237,7 +227,6 @@
       searchContainer.classList.toggle('open');
     });
 
-    // Ricerca semplice
     document.getElementById('search').addEventListener('input', function () {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
@@ -245,21 +234,18 @@
       });
     });
 
-    // Rileva Safari iOS
-    const isSafariIOS = /iP(ad|hone|od).+Version\/[\d.]+.*Safari/i.test(navigator.userAgent);
+    const isMobile = /iP(hone|ad|od)|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     const pdfOverlay = document.getElementById('pdf-overlay');
     const pdfBack = document.getElementById('pdf-back');
 
-    // Apertura PDF
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
         const pdfSrc = btn.dataset.pdf;
         pdfOverlay.innerHTML = '';
         pdfOverlay.appendChild(pdfBack);
 
-        if (isSafariIOS) {
-          // Safari iOS: embed dentro wrapper scrollabile
+        if (isMobile) {
           const wrapper = document.createElement('div');
           wrapper.className = 'pdf-wrapper';
 
@@ -274,9 +260,8 @@
           pdfOverlay.appendChild(wrapper);
 
           pdfOverlay.style.display = 'flex';
-          pdfOverlay.style.opacity = '1'; // no fade su Safari iOS
+          pdfOverlay.style.opacity = '1';
         } else {
-          // Altri browser: iframe con fade
           const iframe = document.createElement('iframe');
           iframe.src = pdfSrc;
           iframe.style.flex = '1';
@@ -292,9 +277,8 @@
       });
     });
 
-    // Chiusura overlay PDF
     pdfBack.addEventListener('click', () => {
-      if (!isSafariIOS) {
+      if (!isMobile) {
         pdfOverlay.style.opacity = '0';
         pdfOverlay.addEventListener('transitionend', function hide() {
           pdfOverlay.style.display = 'none';
