@@ -66,25 +66,6 @@
       background-color: #1e7e34;
     }
 
-    #search-container {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.4s ease-in-out;
-    }
-
-    #search-container.open {
-      max-height: 50px;
-    }
-
-    #search {
-      width: 100%;
-      margin-top: 0;
-      padding: 6px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
     #poi-list {
       list-style: none;
       padding: 10px;
@@ -172,25 +153,25 @@
         margin-left: 5px;
       }
 
-      /* Search container appare sopra la mappa e pulsanti zoom */
+      /* Search container su mobile sopra la mappa e controlli zoom */
       #search-container {
-        position: absolute;
-        top: 40px; /* subito sotto il pulsante Cerca */
+        position: fixed;
+        top: 60px;       /* subito sotto il pulsante Cerca */
         left: 10px;
         right: 10px;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-        z-index: 5000; /* sopra i pulsanti + e - della mappa */
+        z-index: 99999;  /* molto sopra tutti i controlli Leaflet */
         background: #f8f8f8;
         padding: 5px 10px;
         border-radius: 4px;
-        opacity: 0; /* nascosta di default */
+        opacity: 0;      /* nascosta di default */
       }
 
       #search-container.open {
         max-height: 50px;
-        opacity: 1; /* visibile quando aperta */
+        opacity: 1;      /* visibile quando aperta */
       }
     }
   </style>
@@ -201,15 +182,17 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
-      <div id="search-container">
-        <input type="text" id="search" placeholder="Cerca per nome o città...">
-      </div>
     </div>
 
     <div id="right-buttons">
       <button class="pdf-button" data-pdf="pdf/informative.pdf">Informative</button>
       <button class="pdf-button" data-pdf="pdf/contenitori.pdf">Contenitori</button>
     </div>
+  </div>
+
+  <!-- Barra di ricerca spostata qui per mobile -->
+  <div id="search-container">
+    <input type="text" id="search" placeholder="Cerca per nome o città...">
   </div>
 
   <div id="map"></div>
