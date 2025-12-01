@@ -173,10 +173,11 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Script della mappa e POI -->
   <script src="script.js"></script>
 
+  <!-- Script overlay PDF -->
   <script>
-    // Gestione overlay PDF con fade
     const pdfOverlay = document.getElementById('pdf-overlay');
     const pdfIframe = pdfOverlay.querySelector('iframe');
     const pdfBack = document.getElementById('pdf-back');
@@ -191,9 +192,7 @@
 
     pdfBack.addEventListener('click', () => {
       pdfOverlay.classList.remove('show'); // fade-out
-      setTimeout(() => {
-        pdfIframe.src = ''; // rimuove il PDF dopo la transizione
-      }, 400); 
+      setTimeout(() => { pdfIframe.src = ''; }, 400);
     });
   </script>
 
