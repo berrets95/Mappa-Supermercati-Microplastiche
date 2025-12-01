@@ -29,6 +29,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
+      z-index: 1000;
     }
 
     #left-controls {
@@ -68,19 +70,16 @@
     }
 
     #search-container {
-      position: absolute;
-      top: 0;
       overflow: hidden;
       max-height: 0;
       transition: max-height 0.4s ease-in-out;
-      z-index: 1001;
     }
 
     #search-container.open {
-      max-height: 40px;
+      max-height: 50px;
     }
 
-    #search-container input {
+    #search {
       width: 100%;
       padding: 6px;
       font-size: 14px;
@@ -138,6 +137,24 @@
 
     #pdf-back:hover {
       background: #005fa3;
+    }
+
+    /* MOBILE: barra di ricerca sotto Cerca */
+    @media (max-width: 768px) {
+      #search-container {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 45px; /* subito sotto il pulsante Cerca */
+        z-index: 1001;
+        background: #f8f8f8;
+        padding: 5px 10px;
+      }
+
+      #search-container input {
+        width: 100%;
+        box-sizing: border-box;
+      }
     }
   </style>
 </head>
@@ -205,20 +222,9 @@
 
     const toggleButton = document.getElementById('toggle-search');
     const searchContainer = document.getElementById('search-container');
-    const searchInput = document.getElementById('search');
-    const rightButtons = document.getElementById('right-buttons');
 
     toggleButton.addEventListener('click', () => {
       searchContainer.classList.toggle('open');
-
-      if (searchContainer.classList.contains('open')) {
-        // Calcola la posizione e la larghezza della barra di ricerca
-        const toggleRect = toggleButton.getBoundingClientRect();
-        const rightRect = rightButtons.getBoundingClientRect();
-        searchContainer.style.left = (toggleRect.right + 5) + 'px';
-        searchContainer.style.top = toggleRect.top + 'px';
-        searchContainer.style.width = (rightRect.left - toggleRect.right - 5) + 'px';
-      }
     });
 
     document.getElementById('search').addEventListener('input', function () {
@@ -266,17 +272,6 @@
         pdfOverlay.appendChild(pdfBack);
         pdfOverlay.removeEventListener('transitionend', hide);
       });
-    });
-
-    // Aggiorna larghezza della barra se ridimensioni finestra
-    window.addEventListener('resize', () => {
-      if (searchContainer.classList.contains('open')) {
-        const toggleRect = toggleButton.getBoundingClientRect();
-        const rightRect = rightButtons.getBoundingClientRect();
-        searchContainer.style.left = (toggleRect.right + 5) + 'px';
-        searchContainer.style.top = toggleRect.top + 'px';
-        searchContainer.style.width = (rightRect.left - toggleRect.right - 5) + 'px';
-      }
     });
   </script>
 
