@@ -118,7 +118,8 @@
       transition: opacity 0.4s ease-in-out;
     }
 
-    #pdf-overlay iframe {
+    #pdf-overlay iframe,
+    #pdf-overlay embed {
       flex: 1;
       width: 100%;
       border: none;
@@ -140,9 +141,10 @@
       background: #005fa3;
     }
 
-    /* Responsive per mobile: PDF adattato alla viewport */
+    /* Responsive per mobile */
     @media (max-width: 768px) {
-      #pdf-overlay iframe {
+      #pdf-overlay iframe,
+      #pdf-overlay embed {
         width: 100vw;
         height: 100vh;
         max-width: 100%;
@@ -177,7 +179,6 @@
   <!-- Overlay PDF -->
   <div id="pdf-overlay">
     <button id="pdf-back">← Indietro</button>
-    <iframe src=""></iframe>
   </div>
 
   <!-- Leaflet JS -->
@@ -237,15 +238,39 @@
       });
     });
 
-    // Gestione overlay PDF con fade in/out
+    // Rileva Safari su iOS
+    const isSafariIOS = /iP(ad|hone|od).+Version\/[\d.]+.*Safari/i.test(navigator.userAgent);
+
     const pdfOverlay = document.getElementById('pdf-overlay');
-    const pdfIframe = pdfOverlay.querySelector('iframe');
     const pdfBack = document.getElementById('pdf-back');
 
+    // Gestione apertura PDF
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
         const pdfSrc = btn.dataset.pdf;
-        pdfIframe.src = pdfSrc;
+
+        // Reset overlay
+        pdfOverlay.innerHTML = '';
+        pdfOverlay.appendChild(pdfBack);
+
+        if (isSafariIOS) {
+          // Usa embed per Safari su iOS
+          const embed = document.createElement('embed');
+          embed.src = pdfSrc;
+          embed.type = 'application/pdf';
+          embed.width = '100%';
+          embed.height = '100%';
+          pdfOverlay.appendChild(embed);
+        } else {
+          // Usa iframe per tutti gli altri browser
+          const iframe = document.createElement('iframe');
+          iframe.src = pdfSrc;
+          iframe.style.flex = '1';
+          iframe.style.width = '100%';
+          iframe.style.border = 'none';
+          pdfOverlay.appendChild(iframe);
+        }
+
         pdfOverlay.style.display = 'flex';
         requestAnimationFrame(() => {
           pdfOverlay.style.opacity = '1';
@@ -253,11 +278,13 @@
       });
     });
 
+    // Chiusura overlay PDF con fade
     pdfBack.addEventListener('click', () => {
       pdfOverlay.style.opacity = '0';
       pdfOverlay.addEventListener('transitionend', function hide() {
         pdfOverlay.style.display = 'none';
-        pdfIframe.src = '';
+        pdfOverlay.innerHTML = '';
+        pdfOverlay.appendChild(pdfBack);
         pdfOverlay.removeEventListener('transitionend', hide);
       });
     });
