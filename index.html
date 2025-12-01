@@ -180,15 +180,17 @@
         right: 10px;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.4s ease-in-out;
-        z-index: 2000; /* in primo piano sopra tutto */
+        transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        z-index: 5000; /* sopra i pulsanti + e - della mappa */
         background: #f8f8f8;
         padding: 5px 10px;
         border-radius: 4px;
+        opacity: 0; /* nascosta di default */
       }
 
       #search-container.open {
         max-height: 50px;
+        opacity: 1; /* visibile quando aperta */
       }
     }
   </style>
