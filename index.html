@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mappa dei Punti di Interesse</title>
 
-  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -116,8 +115,7 @@
       transition: opacity 0.4s ease-in-out;
     }
 
-    #pdf-overlay iframe,
-    #pdf-overlay embed {
+    #pdf-overlay iframe {
       flex: 1;
       width: 100%;
       border: none;
@@ -137,24 +135,6 @@
 
     #pdf-back:hover {
       background: #005fa3;
-    }
-
-    .pdf-wrapper {
-      flex: 1;
-      width: 100%;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    @media (max-width: 768px) {
-      #pdf-overlay iframe,
-      #pdf-overlay embed,
-      .pdf-wrapper {
-        width: 100vw;
-        height: 100vh;
-        max-width: 100%;
-        max-height: 100%;
-      }
     }
   </style>
 </head>
@@ -242,26 +222,15 @@
     document.querySelectorAll('.pdf-button').forEach(btn => {
       btn.addEventListener('click', () => {
         const pdfSrc = btn.dataset.pdf;
-        pdfOverlay.innerHTML = '';
-        pdfOverlay.appendChild(pdfBack);
 
         if (isMobile) {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'pdf-wrapper';
-
-          const embed = document.createElement('embed');
-          embed.src = pdfSrc;
-          embed.type = 'application/pdf';
-          embed.width = '100%';
-          embed.height = '100%';
-          embed.style.backgroundColor = 'white';
-
-          wrapper.appendChild(embed);
-          pdfOverlay.appendChild(wrapper);
-
-          pdfOverlay.style.display = 'flex';
-          pdfOverlay.style.opacity = '1';
+          // Mobile: apri in nuova scheda
+          window.open(pdfSrc, '_blank');
         } else {
+          // Desktop: iframe con fade
+          pdfOverlay.innerHTML = '';
+          pdfOverlay.appendChild(pdfBack);
+
           const iframe = document.createElement('iframe');
           iframe.src = pdfSrc;
           iframe.style.flex = '1';
@@ -278,19 +247,13 @@
     });
 
     pdfBack.addEventListener('click', () => {
-      if (!isMobile) {
-        pdfOverlay.style.opacity = '0';
-        pdfOverlay.addEventListener('transitionend', function hide() {
-          pdfOverlay.style.display = 'none';
-          pdfOverlay.innerHTML = '';
-          pdfOverlay.appendChild(pdfBack);
-          pdfOverlay.removeEventListener('transitionend', hide);
-        });
-      } else {
+      pdfOverlay.style.opacity = '0';
+      pdfOverlay.addEventListener('transitionend', function hide() {
         pdfOverlay.style.display = 'none';
         pdfOverlay.innerHTML = '';
         pdfOverlay.appendChild(pdfBack);
-      }
+        pdfOverlay.removeEventListener('transitionend', hide);
+      });
     });
   </script>
 
