@@ -118,12 +118,26 @@
       background: #005fa3;
     }
 
-    /* Desktop: barra di ricerca nascosta di default */
+    /* Barra di ricerca nascosta di default */
     #search-container {
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
       opacity: 0;
+    }
+
+    #search-container.open {
+      max-height: 50px;
+      opacity: 1;
+    }
+
+    #search {
+      width: 100%;
+      margin-top: 0;
+      padding: 6px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
 
     /* Mobile responsive */
@@ -161,10 +175,10 @@
         margin-left: 5px;
       }
 
-      /* Search container mobile overlay sopra mappa */
+      /* Barra overlay sopra mappa */
       #search-container {
         position: fixed;
-        top: 40px;       /* subito sotto il pulsante Cerca */
+        top: 40px; /* subito sotto il pulsante Cerca */
         left: 10px;
         right: 10px;
         max-height: 0;
@@ -183,18 +197,8 @@
       }
 
       #search {
-        font-size: 16px; /* evita zoom automatico su mobile */
+        font-size: 16px;
       }
-    }
-
-    /* Input barra di ricerca generale */
-    #search {
-      width: 100%;
-      margin-top: 0;
-      padding: 6px;
-      font-size: 14px; /* desktop rimane 14px */
-      border: 1px solid #ccc;
-      border-radius: 4px;
     }
   </style>
 </head>
@@ -204,16 +208,15 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
+      <div id="search-container">
+        <input type="text" id="search" placeholder="Cerca per nome o città...">
+      </div>
     </div>
 
     <div id="right-buttons">
       <button class="pdf-button" data-pdf="pdf/informative.pdf">Informative</button>
       <button class="pdf-button" data-pdf="pdf/contenitori.pdf">Contenitori</button>
     </div>
-  </div>
-
-  <div id="search-container">
-    <input type="text" id="search" placeholder="Cerca per nome o città...">
   </div>
 
   <div id="map"></div>
