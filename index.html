@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mappa Supermercati Microplastiche</title>
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-sA+e2gFjv6bbMT2N2hF4+1E+8p3xD6y0v7vZgF8a+2M="
-          crossorigin=""/>
+    <!-- Leaflet CSS (senza integrity) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <!-- CSS personalizzato -->
     <link rel="stylesheet" href="style.css">
@@ -35,26 +33,15 @@
     <div id="map"></div>
 
     <div class="button-container">
-        <!-- Link relativi ai PDF -->
         <button onclick="window.open('pdf/informative.pdf', '_blank')">Informative</button>
         <button onclick="window.open('pdf/contenitori.pdf', '_blank')">Contenitori</button>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-o9N1j5M4X+Yw6gB+8v4G1AXp0xZgk0Z6g8jVBK8M2yk="
-            crossorigin=""></script>
+    <!-- Leaflet JS (senza integrity) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- Il tuo JS -->
     <script src="script.js"></script>
 
-    <script>
-        // Esempio minimo di mappa se script.js non contiene codice iniziale
-        const map = L.map('map').setView([45.4642, 9.19], 13); // Milano come esempio
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-    </script>
 </body>
 </html>
