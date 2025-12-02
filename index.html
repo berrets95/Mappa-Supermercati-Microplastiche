@@ -66,6 +66,28 @@
       background-color: #1e7e34;
     }
 
+    /* Barra nascosta di default (desktop) */
+    #search-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+      opacity: 0;
+    }
+
+    #search-container.open {
+      max-height: 50px;
+      opacity: 1;
+    }
+
+    #search {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
     #poi-list {
       list-style: none;
       padding: 10px;
@@ -96,12 +118,6 @@
       transition: opacity 0.4s ease-in-out;
     }
 
-    #pdf-overlay iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-    }
-
     #pdf-back {
       position: sticky;
       top: 0;
@@ -118,30 +134,12 @@
       background: #005fa3;
     }
 
-    /* Barra di ricerca nascosta di default */
-    #search-container {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-      opacity: 0;
-    }
 
-    #search-container.open {
-      max-height: 50px;
-      opacity: 1;
-    }
 
-    #search {
-      width: 100%;
-      margin-top: 0;
-      padding: 6px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
 
-    /* Mobile responsive */
+    /* ---------------- MOBILE VERSION ---------------- */
     @media (max-width: 768px) {
+
       #controls {
         flex-wrap: nowrap;
         padding: 8px;
@@ -149,46 +147,31 @@
         z-index: 1000;
       }
 
-      #left-controls, #right-buttons {
-        flex: 1;
-        display: flex;
-        align-items: center;
-      }
-
-      #left-controls {
-        justify-content: flex-start;
-      }
-
-      #right-buttons {
-        justify-content: flex-end;
-      }
-
       #toggle-search {
         font-size: 14px;
         padding: 6px 10px;
-        margin-right: 5px;
       }
 
       .pdf-button {
         font-size: 14px;
         padding: 6px 10px;
-        margin-left: 5px;
       }
 
-      /* Barra overlay sopra mappa */
+      /* Barra overlay sopra mappa e sopra pulsanti di zoom */
       #search-container {
         position: fixed;
-        top: 40px; /* subito sotto il pulsante Cerca */
+        top: 10px;      /* subito sotto il bordo superiore */
         left: 10px;
         right: 10px;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-        z-index: 99999;
+        z-index: 10001; /* deve superare lo zoom Leaflet */
         background: #f8f8f8;
         padding: 5px 10px;
         border-radius: 4px;
+        max-height: 0;
         opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        box-sizing: border-box;
       }
 
       #search-container.open {
@@ -197,7 +180,9 @@
       }
 
       #search {
-        font-size: 16px;
+        font-size: 16px;     /* evita zoom automatico */
+        width: 100%;
+        box-sizing: border-box;
       }
     }
   </style>
@@ -208,9 +193,11 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
+
       <div id="search-container">
         <input type="text" id="search" placeholder="Cerca per nome o città...">
       </div>
+
     </div>
 
     <div id="right-buttons">
