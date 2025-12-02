@@ -29,8 +29,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
-      z-index: 1000;
     }
 
     #left-controls {
@@ -68,20 +66,14 @@
       background-color: #1e7e34;
     }
 
-    /* Versione WEB (normale) */
-    #search-container {
+    #search-container, #mobile-search-space {
       overflow: hidden;
       max-height: 0;
       transition: max-height 0.4s ease-in-out;
     }
 
-    #search-container.open {
-      max-height: 50px;
-    }
-
     #search {
       width: 100%;
-      margin-top: 0;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #ccc;
@@ -140,12 +132,13 @@
       background: #005fa3;
     }
 
-    /* 🔥 VERSIONE MOBILE — unica parte modificata 🔥 */
+    /* Mobile responsive */
     @media (max-width: 768px) {
-
       #controls {
         flex-wrap: nowrap;
         padding: 8px;
+        position: relative;
+        z-index: 1000;
       }
 
       #left-controls, #right-buttons {
@@ -174,38 +167,22 @@
         margin-left: 5px;
       }
 
-      /* --- BARRA DI RICERCA MOBILE --- */
-      #search-container {
-        position: fixed !important;
-        top: 55px;              /* subito sotto "Cerca" */
-        left: 10px;
-        right: 10px;
-
-        z-index: 9999999 !important;  /* sopra la mappa e lo zoom */
-        background: #f8f8f8;
-        padding: 5px 10px;
-        border-radius: 4px;
-
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        pointer-events: auto;
-
-        transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-        box-sizing: border-box;
-
-        /* forza stacking sopra Leaflet */
-        transform: translateZ(0);
+      /* Spazio invisibile sopra la mappa per la barra di ricerca su mobile */
+      #mobile-search-space {
+        position: absolute;
+        top: 50px; /* sotto i controlli */
+        left: 0;
+        right: 0;
+        z-index: 10000; /* sopra la mappa e pulsanti zoom */
       }
 
-      #search-container.open {
+      #mobile-search-space.open {
         max-height: 50px;
-        opacity: 1;
       }
 
-      /* impedisce zoom automatico iOS/Android */
-      #search {
-        font-size: 16px;
+      #mobile-search-space input {
+        width: calc(100% - 20px);
+        margin: 0 10px;
       }
     }
   </style>
@@ -216,15 +193,17 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
-      <div id="search-container">
-        <input type="text" id="search" placeholder="Cerca per nome o città...">
-      </div>
     </div>
 
     <div id="right-buttons">
       <button class="pdf-button" data-pdf="pdf/informative.pdf">Informative</button>
       <button class="pdf-button" data-pdf="pdf/contenitori.pdf">Contenitori</button>
     </div>
+  </div>
+
+  <!-- Spazio invisibile per la barra mobile -->
+  <div id="mobile-search-space">
+    <input type="text" id="mobile-search" placeholder="Cerca per nome o città...">
   </div>
 
   <div id="map"></div>
@@ -272,20 +251,6 @@
         });
       });
 
-    const toggleButton = document.getElementById('toggle-search');
-    const searchContainer = document.getElementById('search-container');
-
-    toggleButton.addEventListener('click', () => {
-      searchContainer.classList.toggle('open');
-    });
-
-    document.getElementById('search').addEventListener('input', function () {
-      const query = this.value.toLowerCase();
-      document.querySelectorAll('#poi-list li').forEach(li => {
-        li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
-      });
-    });
-
     const isMobile = /iP(hone|ad|od)|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     const pdfOverlay = document.getElementById('pdf-overlay');
@@ -303,6 +268,9 @@
 
           const iframe = document.createElement('iframe');
           iframe.src = pdfSrc;
+          iframe.style.flex = '1';
+          iframe.style.width = '100%';
+          iframe.style.border = 'none';
           pdfOverlay.appendChild(iframe);
 
           pdfOverlay.style.display = 'flex';
@@ -320,6 +288,27 @@
         pdfOverlay.innerHTML = '';
         pdfOverlay.appendChild(pdfBack);
         pdfOverlay.removeEventListener('transitionend', hide);
+      });
+    });
+
+    // Mobile search toggle
+    const toggleButton = document.getElementById('toggle-search');
+    const mobileSearchSpace = document.getElementById('mobile-search-space');
+    const mobileSearchInput = document.getElementById('mobile-search');
+
+    toggleButton.addEventListener('click', () => {
+      mobileSearchSpace.classList.toggle('open');
+      if (mobileSearchSpace.classList.contains('open')) {
+        mobileSearchInput.focus();
+      } else {
+        mobileSearchInput.value = '';
+      }
+    });
+
+    mobileSearchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      document.querySelectorAll('#poi-list li').forEach(li => {
+        li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
       });
     });
   </script>
