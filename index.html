@@ -29,7 +29,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative; /* PER MOBILE: contiene la barra */
+      position: relative;
       z-index: 1000;
     }
 
@@ -68,7 +68,7 @@
       background-color: #1e7e34;
     }
 
-    /* Versione web: normale */
+    /* Versione WEB (normale) */
     #search-container {
       overflow: hidden;
       max-height: 0;
@@ -118,6 +118,12 @@
       transition: opacity 0.4s ease-in-out;
     }
 
+    #pdf-overlay iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+
     #pdf-back {
       position: sticky;
       top: 0;
@@ -130,42 +136,66 @@
       z-index: 10000;
     }
 
-    /* ------------------------------- */
-    /*      🎯 MOBILE OVERRIDE        */
-    /* ------------------------------- */
+    #pdf-back:hover {
+      background: #005fa3;
+    }
+
+    /* 🔥 VERSIONE MOBILE — unica parte modificata 🔥 */
     @media (max-width: 768px) {
 
       #controls {
         flex-wrap: nowrap;
         padding: 8px;
-        position: relative;
+      }
+
+      #left-controls, #right-buttons {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      #left-controls {
+        justify-content: flex-start;
+      }
+
+      #right-buttons {
+        justify-content: flex-end;
       }
 
       #toggle-search {
         font-size: 14px;
         padding: 6px 10px;
+        margin-right: 5px;
       }
 
       .pdf-button {
         font-size: 14px;
         padding: 6px 10px;
+        margin-left: 5px;
       }
 
-      /* Barra di ricerca ANCORATA A #controls */
+      /* --- BARRA DI RICERCA MOBILE --- */
       #search-container {
-        position: absolute;    /* NON FIXED → risolve override con lo zoom */
-        top: 45px;             /* subito sotto il tasto Cerca */
-        left: 0;
-        right: 0;
+        position: fixed !important;
+        top: 55px;              /* subito sotto "Cerca" */
+        left: 10px;
+        right: 10px;
+
+        z-index: 9999999 !important;  /* sopra la mappa e lo zoom */
         background: #f8f8f8;
         padding: 5px 10px;
         border-radius: 4px;
-        z-index: 20;           /* ora basta perché è sopra la mappa */
+
         max-height: 0;
         opacity: 0;
         overflow: hidden;
+        pointer-events: auto;
+
         transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
         box-sizing: border-box;
+
+        /* forza stacking sopra Leaflet */
+        transform: translateZ(0);
       }
 
       #search-container.open {
@@ -173,6 +203,7 @@
         opacity: 1;
       }
 
+      /* impedisce zoom automatico iOS/Android */
       #search {
         font-size: 16px;
       }
@@ -185,7 +216,6 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
-
       <div id="search-container">
         <input type="text" id="search" placeholder="Cerca per nome o città...">
       </div>
@@ -273,9 +303,6 @@
 
           const iframe = document.createElement('iframe');
           iframe.src = pdfSrc;
-          iframe.style.flex = '1';
-          iframe.style.width = '100%';
-          iframe.style.border = 'none';
           pdfOverlay.appendChild(iframe);
 
           pdfOverlay.style.display = 'flex';
