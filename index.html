@@ -64,10 +64,15 @@
       background-color: #1e7e34;
     }
 
+    /* Barra web nascosta di default */
     #search-container {
       overflow: hidden;
-      max-height: 50px;
+      max-height: 0;
       transition: max-height 0.4s ease-in-out;
+    }
+
+    #search-container.open {
+      max-height: 50px;
     }
 
     #search {
@@ -165,13 +170,12 @@
         margin-left: 5px;
       }
 
-      /* Barra mobile sopra mappa, visibile solo quando aperta */
       #mobile-search-space {
         position: absolute;
-        top: 40px; /* subito sotto il pulsante cerca */
+        top: 40px;
         left: 0;
         right: 0;
-        z-index: 10000; /* sopra la mappa e pulsanti zoom */
+        z-index: 10000;
         overflow: hidden;
         max-height: 0;
         transition: max-height 0.4s ease-in-out;
@@ -188,13 +192,13 @@
         font-size: 14px;
       }
 
-      /* Nascondo la barra web su mobile */
+      /* Nascondo barra web su mobile */
       #search-container {
         display: none !important;
       }
     }
 
-    /* Mostro barra web solo su desktop */
+    /* Desktop: mostra barra web solo quando aperta */
     @media (min-width: 769px) {
       #mobile-search-space {
         display: none;
@@ -211,7 +215,6 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
-      <!-- Barra desktop/web -->
       <div id="search-container">
         <input type="text" id="search" placeholder="Cerca per nome o città...">
       </div>
@@ -223,7 +226,6 @@
     </div>
   </div>
 
-  <!-- Barra mobile -->
   <div id="mobile-search-space">
     <input type="text" id="mobile-search" placeholder="Cerca per nome o città...">
   </div>
@@ -313,10 +315,12 @@
       });
     });
 
-    // Mobile search toggle
+    // Toggle cerca per mobile e desktop
     const toggleButton = document.getElementById('toggle-search');
     const mobileSearchSpace = document.getElementById('mobile-search-space');
     const mobileSearchInput = document.getElementById('mobile-search');
+    const desktopSearchContainer = document.getElementById('search-container');
+    const desktopSearchInput = document.getElementById('search');
 
     toggleButton.addEventListener('click', () => {
       if (isMobile) {
@@ -327,13 +331,16 @@
           mobileSearchInput.value = '';
         }
       } else {
-        // Desktop: focus barra web
-        const desktopInput = document.getElementById('search');
-        desktopInput.focus();
+        desktopSearchContainer.classList.toggle('open');
+        if (desktopSearchContainer.classList.contains('open')) {
+          desktopSearchInput.focus();
+        } else {
+          desktopSearchInput.value = '';
+        }
       }
     });
 
-    // Mobile search input
+    // Filtra POI
     mobileSearchInput.addEventListener('input', function() {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
@@ -341,14 +348,13 @@
       });
     });
 
-    // Desktop search input
-    const desktopSearchInput = document.getElementById('search');
     desktopSearchInput.addEventListener('input', function() {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
         li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
       });
     });
+
   </script>
 
 </body>
