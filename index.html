@@ -184,6 +184,11 @@
         width: calc(100% - 20px);
         margin: 0 10px;
       }
+
+      /* Nascondo la barra web su mobile */
+      #search-container {
+        display: none !important;
+      }
     }
   </style>
 </head>
@@ -193,6 +198,10 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
+      <!-- Barra di ricerca desktop/web -->
+      <div id="search-container">
+        <input type="text" id="search" placeholder="Cerca per nome o città...">
+      </div>
     </div>
 
     <div id="right-buttons">
@@ -306,6 +315,15 @@
     });
 
     mobileSearchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      document.querySelectorAll('#poi-list li').forEach(li => {
+        li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
+      });
+    });
+
+    // Desktop search input
+    const desktopSearchInput = document.getElementById('search');
+    desktopSearchInput.addEventListener('input', function() {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
         li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
