@@ -36,14 +36,17 @@
       align-items: center;
     }
 
-    #toggle-search {
-      background-color: #0078d7;
-      color: white;
+    #toggle-search, .pdf-button {
       border: none;
-      padding: 8px 12px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 15px;
+      padding: 8px 12px;
+    }
+
+    #toggle-search {
+      background-color: #0078d7;
+      color: white;
       margin-right: 10px;
     }
 
@@ -54,11 +57,6 @@
     .pdf-button {
       background-color: #28a745;
       color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 15px;
       margin-left: 5px;
     }
 
@@ -66,14 +64,14 @@
       background-color: #1e7e34;
     }
 
-    #search-container, #mobile-search-space {
+    #search-container {
       overflow: hidden;
-      max-height: 0;
+      max-height: 50px;
       transition: max-height 0.4s ease-in-out;
     }
 
     #search {
-      width: 100%;
+      width: 200px;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #ccc;
@@ -167,13 +165,16 @@
         margin-left: 5px;
       }
 
-      /* Spazio invisibile sopra la mappa per la barra di ricerca su mobile */
+      /* Barra mobile sopra mappa, visibile solo quando aperta */
       #mobile-search-space {
         position: absolute;
-        top: 50px; /* sotto i controlli */
+        top: 40px; /* subito sotto il pulsante cerca */
         left: 0;
         right: 0;
         z-index: 10000; /* sopra la mappa e pulsanti zoom */
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.4s ease-in-out;
       }
 
       #mobile-search-space.open {
@@ -183,11 +184,23 @@
       #mobile-search-space input {
         width: calc(100% - 20px);
         margin: 0 10px;
+        padding: 6px;
+        font-size: 14px;
       }
 
       /* Nascondo la barra web su mobile */
       #search-container {
         display: none !important;
+      }
+    }
+
+    /* Mostro barra web solo su desktop */
+    @media (min-width: 769px) {
+      #mobile-search-space {
+        display: none;
+      }
+      #search-container {
+        display: block;
       }
     }
   </style>
@@ -198,7 +211,7 @@
   <div id="controls">
     <div id="left-controls">
       <button id="toggle-search">🔍 Cerca</button>
-      <!-- Barra di ricerca desktop/web -->
+      <!-- Barra desktop/web -->
       <div id="search-container">
         <input type="text" id="search" placeholder="Cerca per nome o città...">
       </div>
@@ -210,7 +223,7 @@
     </div>
   </div>
 
-  <!-- Spazio invisibile per la barra mobile -->
+  <!-- Barra mobile -->
   <div id="mobile-search-space">
     <input type="text" id="mobile-search" placeholder="Cerca per nome o città...">
   </div>
@@ -306,14 +319,21 @@
     const mobileSearchInput = document.getElementById('mobile-search');
 
     toggleButton.addEventListener('click', () => {
-      mobileSearchSpace.classList.toggle('open');
-      if (mobileSearchSpace.classList.contains('open')) {
-        mobileSearchInput.focus();
+      if (isMobile) {
+        mobileSearchSpace.classList.toggle('open');
+        if (mobileSearchSpace.classList.contains('open')) {
+          mobileSearchInput.focus();
+        } else {
+          mobileSearchInput.value = '';
+        }
       } else {
-        mobileSearchInput.value = '';
+        // Desktop: focus barra web
+        const desktopInput = document.getElementById('search');
+        desktopInput.focus();
       }
     });
 
+    // Mobile search input
     mobileSearchInput.addEventListener('input', function() {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#poi-list li').forEach(li => {
